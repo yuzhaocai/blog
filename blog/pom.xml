@@ -7,13 +7,16 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>blog Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  <properties>
+  	<spring.version>4.2.0.RELEASE</spring.version>
+  </properties>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
+  	<!-- spring-context -->
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-context</artifactId>
+  		<version>${spring.version}}</version>
+  	</dependency>
   </dependencies>
   <build>
     <finalName>blog</finalName>
