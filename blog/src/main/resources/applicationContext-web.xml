@@ -1,1 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+		
+	<context:component-scan base-package="com.class8.blog.controllers"></context:component-scan>
+	
+	<mvc:annotation-driven/>
+	
+	<mvc:resources location="/resources/**" mapping="/resources/"></mvc:resources>
+	
+	<bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean=""/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 避免返回中文时出现乱码 -->
+	<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/plain;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 避免IE上返回json时出现文件下载 -->
+	<bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+				<value>text/plain;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 避免返回xml时出现文件下载情况 -->
+	<bean id="marshallingHttpMessageConverter"  class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">  
+       	<property name="marshaller" ref="castorMarshaller" />  
+       	<property name="unmarshaller" ref="castorMarshaller" />  
+       	<property name="supportedMediaTypes">  
+           	<list>  
+               	<value>text/xml;charset=UTF-8</value>  
+               	<value>application/xml;charset=UTF-8</value>  
+           	</list>  
+       	</property>  
+   	</bean>  
+    	
+   	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" /> 
+   	
+   	
+	<!-- TODO -->
+	
+	
+	
+</beans>
