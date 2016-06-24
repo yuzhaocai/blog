@@ -10,19 +10,35 @@
 		
 	<context:component-scan base-package="com.class8.blog.controllers"></context:component-scan>
 	
-	<mvc:annotation-driven/>
+	<!-- 静态资源的处理方案一 -->
+	<mvc:resources location="/static/**" mapping="/static/"></mvc:resources>
 	
-	<mvc:resources location="/resources/**" mapping="/resources/"></mvc:resources>
+	<!-- 
+		静态资源的处理方案二,表示使用容器默认的servlet来处理静态资源
+		<mvc:default-servlet-handler/>
+	 -->
+	 
+	 <!-- 
+	 	<mvc:interceptors/>会为每一个HandlerMapping，注入一个拦截器。其实我们也可以手动配置为每个 
+	 	注意：mvc:resource对静态资源的处理也是通过HandlerMapping来实现，默认也是走拦截器的
+	 	<mvc:interceptors></mvc:interceptors>
+	 -->
 	
 	<bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/views/"></property>
 		<property name="suffix" value=".jsp"></property>
 	</bean>
 	
+	<!-- 
+		HttpMessageConverters的选择顺序为根据Request Headers中的Accept的顺序来选择合适的messageConverter来进行选择，
+		当有多个HttpMessageConverter都支持该MINE类型，则根据messageConverters声明时的顺序进行选择
+	 -->
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
 		<property name="messageConverters">
 			<list>
-				<ref bean=""/>
+				<ref bean="stringHttpMessageConverter"/>
+				<ref bean="marshallingHttpMessageConverter"/>
+				<ref bean="mappingJackson2HttpMessageConverter"/>
 			</list>
 		</property>
 	</bean>
@@ -32,15 +48,18 @@
 		<property name="supportedMediaTypes">
 			<list>
 				<value>text/plain;charset=UTF-8</value>
+				<value>text/html;charset=UTF-8</value>
 			</list>
 		</property>
 	</bean>
 	
-	<!-- 避免IE上返回json时出现文件下载 -->
+	<!-- 避免IE上返回json时出现文件下载,主要是因为IE上不支持application/json这种mine类型 -->
 	<bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 		<property name="supportedMediaTypes">
 			<list>
 				<value>application/json;charset=UTF-8</value>
+				<!-- 这种方式返回的是字符串，需要eval函数转为json对象，或者使用Jquery时需要设置dataType:"json" -->
+				<value>text/html;charset=UTF-8</value>
 				<value>text/plain;charset=UTF-8</value>
 			</list>
 		</property>
@@ -52,17 +71,40 @@
        	<property name="unmarshaller" ref="castorMarshaller" />  
        	<property name="supportedMediaTypes">  
            	<list>  
-               	<value>text/xml;charset=UTF-8</value>  
-               	<value>application/xml;charset=UTF-8</value>  
+               	<value>application/xml;charset=UTF-8</value>
+               	<value>text/html;charset=UTF-8</value>  
            	</list>  
        	</property>  
    	</bean>  
     	
    	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" /> 
    	
-   	
-	<!-- TODO -->
+	<!-- SpringMVC文件上传配置,注意这里的名称必须为multipartResolver,该值在DispatcherServlet中写死的，
+		 SpringMVC在超出上传文件限制时，会抛出org.springframework.web.multipart.MaxUploadSizeExceededException,
+    	  该异常是SpringMVC在检查上传的文件信息时抛出来的，而且此时还没有进入到Controller方法中
+	 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<!-- 表示的是单次文件上传的总大小限制，而非一个文件的大小 -->
+		<property name="maxUploadSize" value="1024"></property>
+	</bean>
 	
+	<!-- 自定义异常处理器 ,记录日志信息 -->
+	<bean id="exceptionResolver" class="com.class8.blog.exception.support.PlaformMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">error/error_fileupload</prop>
+				<prop key="java.lang.Exception">error/error</prop>
+			</props>
+		</property>
+		<property name="defaultErrorView" value="error/error"></property>
+		<property name="exceptionAttribute" value="exception"></property>
+	</bean>
 	
-	
+	<!-- 
+		从spring 3.1开始，默认注册的RequestMappingHandlerMapping和RequestMappingHandlerAdapter，
+		在spring 2.5之前默认注册的 为DefaultAnnotaionHanderMapping和AnnotionMethodHandlerAdapter，
+		此配置需要放置到最后，千万注意
+	-->
+	<mvc:annotation-driven/>
 </beans>

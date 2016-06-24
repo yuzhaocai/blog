@@ -55,9 +55,11 @@
   	<hibernate.version>5.1.0.Final</hibernate.version>
   	<commons-dbcp.version>1.4</commons-dbcp.version>
   	<mysql-connector-java.version>5.1.8</mysql-connector-java.version>
+  	<org.slf4j-version>1.7.5</org.slf4j-version>
   	<log4j.version>1.2.17</log4j.version>
   	<junit.version>4.12</junit.version>
   	<jackson-databind.version>2.2.3</jackson-databind.version>
+  	<org.aspectj-version>1.8.7</org.aspectj-version>
   </properties>
   <dependencies>
   	<!-- spring-context -->
@@ -78,6 +80,12 @@
   		<artifactId>spring-webmvc</artifactId>
   		<version>${spring.version}</version>
   	</dependency>
+  	<!-- spring-oxm -->
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-oxm</artifactId>
+  		<version>${spring.version}</version>
+  	</dependency>
   	<!-- srping-test -->
 	<dependency>
 		<groupId>org.springframework</groupId>
@@ -90,11 +98,29 @@
 		<artifactId>spring-data-jpa</artifactId>
 		<version>${spring-data-jpa.version}</version>
 	</dependency>
+	<!-- aspect -->
+	<dependency>
+		<groupId>org.aspectj</groupId>
+		<artifactId>aspectjweaver</artifactId>
+		<version>${org.aspectj-version}</version>
+	</dependency>
 	<!-- hibernate-entitymanager -->
 	<dependency>
 		<groupId>org.hibernate</groupId>
 		<artifactId>hibernate-entitymanager</artifactId>
 		<version>${hibernate.version}</version>
+	</dependency>
+	<!-- jsr-303 -->
+	<dependency>
+		<groupId>javax.validation</groupId>
+		<artifactId>validation-api</artifactId>
+		<version>1.1.0.Final</version>
+	</dependency>
+	<!-- hibernate-validator -->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-validator</artifactId>
+		<version>5.0.2.Final</version>
 	</dependency>
 	<!-- common-dbcp -->
 	<dependency>
@@ -108,6 +134,26 @@
 		<artifactId>mysql-connector-java</artifactId>
 		<version>${mysql-connector-java.version}</version>
 	</dependency>
+	<!-- logging(slf4j) -->
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>${org.slf4j-version}</version>
+	</dependency>
+	<!-- jcl(apache commons logging) -->
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>jcl-over-slf4j</artifactId>
+		<version>${org.slf4j-version}</version>
+		<scope>runtime</scope>
+	</dependency>
+	<!-- slf4j-log4j12 -->
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+		<version>${org.slf4j-version}</version>
+		<scope>runtime</scope>
+	</dependency>
 	<!-- log4j -->
 	<dependency>
 		<groupId>log4j</groupId>
@@ -119,6 +165,63 @@
 		<groupId>com.fasterxml.jackson.core</groupId>
 		<artifactId>jackson-databind</artifactId>
 		<version>${jackson-databind.version}</version>
+	</dependency>
+	<!-- commons-fileupload(spring mvc fileupload required) -->
+	<dependency>
+		<groupId>commons-fileupload</groupId>
+		<artifactId>commons-fileupload</artifactId>
+		<version>1.3.1</version>
+	</dependency>
+	<!-- commons-io(spring mvc fileupload required)-->
+	<dependency>
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>2.4</version>
+	</dependency>
+	<!-- castor-core -->
+	<dependency>
+      <groupId>org.codehaus.castor</groupId>
+      <artifactId>castor-core</artifactId>
+      <version>1.3.3</version>
+   </dependency>
+	<!-- castor-xml -->
+	<dependency>
+	    <groupId>org.codehaus.castor</groupId>
+	    <artifactId>castor-xml</artifactId>
+	    <version>1.3.3</version>
+	</dependency>
+	<!-- @Inject -->
+	<dependency>
+		<groupId>javax.inject</groupId>
+		<artifactId>javax.inject</artifactId>
+		<version>1</version>
+	</dependency>
+	<!-- servlet -->
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>servlet-api</artifactId>
+		<version>2.5</version>
+		<scope>provided</scope>
+	</dependency>
+	<!-- jsp -->
+	<dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <version>2.1</version>
+        <scope>provided</scope>
+    </dependency>
+	<!-- jstl -->
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>jstl</artifactId>
+		<version>1.2</version>
+		<scope>provided</scope>
+	</dependency>
+	<!-- standard -->
+	<dependency>
+		<groupId>taglibs</groupId>
+		<artifactId>standard</artifactId>
+		<version>1.1.2</version>
 	</dependency>
 	<!-- junit -->
 	<dependency>

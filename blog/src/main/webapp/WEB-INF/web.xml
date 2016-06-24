@@ -2,7 +2,12 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
-
+	<!-- 
+		spring父子容器的概念：
+			*通过ContextLoaderListener加载的spring容器为父容器，父容器是子容器所共享的
+			*通过DispatcherServlet加载的WebApplicationContext上下文为spring子容器，父容器不能访问子容器，但子容器能访问父容器
+	
+	 -->
   	<context-param>
   		<param-name>webAppRootKey</param-name>
   		<param-value>webapp.root</param-value>
@@ -21,8 +26,7 @@
   	<context-param>
   		<param-name>contextConfigLocation</param-name>
   		<param-value>
-  			classpath:application-core.xml
-  			classpath:application-shiro.xml
+  			classpath:applicationContext-core.xml
   		</param-value>
   	</context-param>
   	
@@ -36,7 +40,7 @@
   	
   	<filter>
   		<filter-name>encodingFilter</filter-name>
-  		<filter-class>org.comet4j.core.util.CharacterEncodingFilter</filter-class>
+  		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
   		<init-param>
   			<param-name>encoding</param-name>
   			<param-value>UTF-8</param-value>
@@ -51,13 +55,21 @@
   		<filter-name>encodingFilter</filter-name>
   		<url-pattern>/*</url-pattern>
   	</filter-mapping>
-  	
+  	<!-- 
+  		*可以配置多个DispatcherServlet，多个DispatcherServlet根据名称来区分，每个DispatcherServlet多有自己的WebApplicationContext上下文对象
+  		*DispatcherServlet初始化过程，默认回加载/WEB-INF/[dispatcher-name]-servlet.xml文件，如果没有指定，没有则抛出异常
+  		*通过contextConfigLocation指定配置文件的位置，多个配置文件使用逗号或者空格分开
+  		*拦截规则的问题：
+  			/*和/的区别：
+  				*/*:是路径匹配，优先级高于扩展匹配
+  				*/:表示定义默认的servlet，当请求没有找到对应的servlet进行处理时，请求交给默认的servlet进行处理。 
+  	 -->
   	<servlet>
   		<servlet-name>dispatcherServlet</servlet-name>
   		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
   		<init-param>
   			<param-name>contextConfigLocation</param-name>
-  			<param-value>classpath:applicationCotnext-web.xml</param-value>
+  			<param-value>classpath:applicationContext-web.xml</param-value>
   		</init-param>
   		<load-on-startup>1</load-on-startup>
   	</servlet>
@@ -66,4 +78,13 @@
   		<servlet-name>dispatcherServlet</servlet-name>
   		<url-pattern>/</url-pattern>
   	</servlet-mapping>
+  	
+  	<session-config>
+  		<session-timeout>30</session-timeout>
+  	</session-config>
+  	
+  	<error-page>
+  		<error-code>404</error-code>
+  		<location>/WEB-INF/views/error/error_notfound.jsp</location>
+  	</error-page>
 </web-app>

@@ -16,7 +16,7 @@ public class UserServiceImpl implements IUserService {
 	private UserRepository userRepository;
 	
 	public void createUser(User user) {
-		userRepository.save(user);
+		System.out.println("create user method invoke()!");
 	}
 	
 }
