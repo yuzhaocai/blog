@@ -26,7 +26,8 @@
   	<context-param>
   		<param-name>contextConfigLocation</param-name>
   		<param-value>
-  			classpath:applicationContext-core.xml
+  			classpath:applicationContext-core.xml,
+  			classpath:applicationContext-memcached.xml
   		</param-value>
   	</context-param>
   	

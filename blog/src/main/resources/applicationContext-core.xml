@@ -21,7 +21,10 @@
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
+				<!-- jdbc连接参数 -->
 				<value>classpath:jdbc.properties</value>
+				<!-- memcached连接参数 -->
+				<value>classpath:memcached.properties</value>
 			</list>
 		</property>
 	</bean>
