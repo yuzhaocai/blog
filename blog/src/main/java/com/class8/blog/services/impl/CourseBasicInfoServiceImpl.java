@@ -26,7 +26,7 @@ public class CourseBasicInfoServiceImpl implements ICourseBasicInfoService {
 	private CourseBasicInfoRepository courseBasicInfoRepository;
 	
 	@Transactional(readOnly=true)
-	@Cacheable(value=CACHE_COURSE,key="#courseid")
+	@Cacheable(value=CACHE_COURSE,key="#courseid.toString().concat('/')")
 	public CourseBasicInfo getCourseBasicInfo(Long courseid) {
 		logger.info("get course by courseid {} from database.",courseid);
 		return courseBasicInfoRepository.findOne(courseid);
@@ -56,7 +56,7 @@ public class CourseBasicInfoServiceImpl implements ICourseBasicInfoService {
 		courseBasicInfoRepository.delete(courseid);
 	}
 	
-	@Cacheable(value=CACHE_COURSE_ALL,key="#root.")
+	@Cacheable(value=CACHE_COURSE_ALL,key="#root.method.name")
 	public List<CourseBasicInfo> listCourseBasicInfo() {
 		logger.info("get all course from database.");
 		return courseBasicInfoRepository.findAll();

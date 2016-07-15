@@ -166,6 +166,17 @@
 		<artifactId>jackson-databind</artifactId>
 		<version>${jackson-databind.version}</version>
 	</dependency>
+	<dependency>
+		<groupId>com.fasterxml.jackson.module</groupId>
+		<artifactId>jackson-module-jaxb-annotations</artifactId>
+		<version>${jackson-databind.version}</version>
+	</dependency>
+	<!-- dozer -->
+	<dependency>
+		<groupId>net.sf.dozer</groupId>
+		<artifactId>dozer</artifactId>
+		<version>5.5.1</version>
+	</dependency>
 	<!-- commons-fileupload(spring mvc fileupload required) -->
 	<dependency>
 		<groupId>commons-fileupload</groupId>
@@ -177,6 +188,18 @@
 		<groupId>commons-io</groupId>
 		<artifactId>commons-io</artifactId>
 		<version>2.4</version>
+	</dependency>
+	<!-- commons-codec -->
+	<dependency>
+		<groupId>commons-codec</groupId>
+		<artifactId>commons-codec</artifactId> 
+		<version>1.7</version>
+	</dependency>
+	<!-- guava(google utilis) -->
+	<dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava</artifactId>
+		<version>17.0</version>
 	</dependency>
 	<!-- castor-core -->
 	<dependency>

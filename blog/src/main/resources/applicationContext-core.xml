@@ -29,7 +29,8 @@
 		</property>
 	</bean>
 	
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+	<!-- Write DataSource -->
+	<bean id="writeDataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="${jdbc.driverClassName}"></property>
 		<property name="url" value="${jdbc.url}"></property>
 		<property name="username" value="${jdbc.username}"></property>
@@ -43,6 +44,40 @@
 		<property name="testWhileIdle" value="${jdbc.testWhileIdle}"></property>
 		<property name="validationQuery" value="${jdbc.validationQuery}"></property>
 	</bean>
+	
+	<!-- Read DataSource -->
+	<bean id="readDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+		<property name="maxActive" value="${jdbc.maxActive}"></property>
+		<property name="maxIdle" value="${jdbc.maxIdle}"></property>
+		<property name="maxWait" value="${jdbc.maxWait}"></property>
+		<property name="initialSize" value="${jdbc.initialSize}"></property>
+		<property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}"></property>
+		<property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}"></property>
+		<property name="testWhileIdle" value="${jdbc.testWhileIdle}"></property>
+		<property name="validationQuery" value="${jdbc.validationQuery}"></property>
+	</bean>
+	
+	<!-- Dynamic DataSource -->
+	<bean id="dataSource" class="com.class8.blog.support.DynamicDataSource">
+		<property name="targetDataSources">
+			<map>
+				<entry key="write" value-ref="writeDataSource"></entry>
+				<entry key="read" value-ref="readDataSource"></entry>
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="writeDataSource"></property>
+		<property name="writeDataSourceKey" value="write"></property>
+		<property name="readDataSourceKeys">
+			<list>
+				<value>read</value>
+			</list>
+		</property>
+	</bean>
+	
 	
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
@@ -65,7 +100,28 @@
 		<property name="entityManagerFactory" ref="entityManagerFactory"></property>
 	</bean>
 	
+	<!-- Annotation Transaction -->
+	<!--  
 	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false"/>
+	-->
+	
+	<!-- Configuration Transaction -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name=""/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- AOP -->
+	<aop:config>
+		<aop:pointcut id="point" expression=""/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="point"/>
+		
+		<aop:aspect ref="">
+			<aop:around method=""/>
+		</aop:aspect>
+	</aop:config>
+	
 	
 	<jpa:repositories base-package="com.class8.blog.repositorys" entity-manager-factory-ref="entityManagerFactory" 
 		transaction-manager-ref="transactionManager" query-lookup-strategy="create-if-not-found" repository-impl-postfix="Impl"></jpa:repositories>

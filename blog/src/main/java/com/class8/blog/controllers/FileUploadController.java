@@ -3,6 +3,7 @@ package com.class8.blog.controllers;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.class8.blog.exception.BusinessException;
 import com.class8.blog.models.User;
 
 /**
@@ -135,4 +138,18 @@ public class FileUploadController {
 	public String listUser(){
 		throw new NullPointerException();
 	}
+	
+	/**
+	 * 测试ajax请求抛出异常是否会被记录
+	 * @param userId
+	 * @return
+	 * @throws BusinessException 
+	 */
+	@RequestMapping(value="/getUserById",method={RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public String getUserById(@RequestParam Long id) throws BusinessException{
+		throw new BusinessException("参数不正确.");
+	}
+	
+	
 }
