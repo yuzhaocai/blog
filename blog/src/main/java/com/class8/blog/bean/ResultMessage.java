@@ -9,45 +9,36 @@ public class ResultMessage {
 	
 	public static final String INTERNAL_SERVER_ERROR_MESSAGE = "系统错误，请稍后重试.";
 	
-	/**
-	 * 响应码
-	 */
-	private int rtcode;
+	private int code;
 	
-	/**
-	 * 结果描述
-	 */
 	private String message;
 	
-	/**
-	 * 响应的数据
-	 */
-	private Object result;
+	private Object data;
 	
 	public ResultMessage(){
 		
 	}
 	
-	public ResultMessage(int rtcode,String message){
-		this(rtcode,message,null);
+	public ResultMessage(int code,String message){
+		this(code,message,null);
 	}
 	
-	public ResultMessage(String message,Object result){
-		this(0,message,result);
+	public ResultMessage(String message,Object data){
+		this(0,message,data);
 	}
 	
-	public ResultMessage(int rtcode,String message,Object result){
-		this.rtcode = rtcode;
+	public ResultMessage(int code,String message,Object data){
+		this.code = code;
 		this.message = message;
-		this.result = result;
+		this.data = data;
 	}
 
-	public int getRtcode() {
-		return rtcode;
+	public int getCode() {
+		return code;
 	}
 
-	public void setRtcode(int rtcode) {
-		this.rtcode = rtcode;
+	public void setCode(int code) {
+		this.code = code;
 	}
 
 	public String getMessage() {
@@ -58,12 +49,12 @@ public class ResultMessage {
 		this.message = message;
 	}
 
-	public Object getResult() {
-		return result;
+	public Object getData() {
+		return data;
 	}
 
-	public void setResult(Object result) {
-		this.result = result;
+	public void setData(Object data) {
+		this.data = data;
 	}
 	
 }
