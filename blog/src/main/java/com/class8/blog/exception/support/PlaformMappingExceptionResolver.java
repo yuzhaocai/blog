@@ -52,7 +52,7 @@ public class PlaformMappingExceptionResolver extends SimpleMappingExceptionResol
 	            	logger.error(message == null? "null" : message,ex);
 	            	response.setContentType("application/json;charset=UTF-8");
 	                ResultMessage resultMessage = new ResultMessage();
-	                resultMessage.setRtcode(ResultMessage.INTERNAL_SERVER_ERROR_RTCODE);
+	                resultMessage.setCode(ResultMessage.INTERNAL_SERVER_ERROR_RTCODE);
 	                if(ex != null && ex instanceof BusinessException){
 	                	resultMessage.setMessage(ex.getMessage());
 	                } else {

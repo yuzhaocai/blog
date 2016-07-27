@@ -1,4 +1,4 @@
-package com.class8.blog.support;
+package com.class8.blog.datasource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,9 +13,13 @@ import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookup;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.util.CollectionUtils;
+/**
+ * 读写分离数据源
+ * @author Administrator
+ *
+ */
+public class ReadWriteDataSource extends AbstractDataSource implements InitializingBean {
 
-public class DynamicDataSource2 extends AbstractDataSource implements InitializingBean {
-	
 	private DataSourceLookup dataSourceLookup;
 	private DataSource writeDataSource;
 	private Map<Object,Object> readDataSources;
@@ -25,7 +29,7 @@ public class DynamicDataSource2 extends AbstractDataSource implements Initializi
 	
 	private Random random = new Random();
 	
-	public DynamicDataSource2(){
+	public ReadWriteDataSource(){
 		dataSourceLookup = new JndiDataSourceLookup();
 	}
 	
@@ -46,6 +50,7 @@ public class DynamicDataSource2 extends AbstractDataSource implements Initializi
 		return determineTargetDataSource().getConnection(username, password);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void afterPropertiesSet() throws Exception {
 		if(writeDataSource == null) {
 			throw new IllegalArgumentException("property 'writeDataSource' is required");
@@ -78,14 +83,19 @@ public class DynamicDataSource2 extends AbstractDataSource implements Initializi
         else
             throw new IllegalArgumentException((new StringBuilder()).append("Illegal data source value - only [javax.sql.DataSource] and String supported: ").append(dataSource).toString());
 	 }
-	
+	 
+	 /**
+	  * 获取真实的数据源(多个读数据源采用随机选择)
+	  * @return
+	  */
 	 protected DataSource determineTargetDataSource() {
-		if(DynamicDataSourceReadWriteHolder.isChoiceWrite()){
-			return writeDataSource;
-		}
-		if(DynamicDataSourceReadWriteHolder.isChoiceRead()){
+		ReadWriteType type = ReadWriteDataSourceDecision.getType();
+		switch (type) {
+		case READ:
 			Object lookupKey = readDataSourcelookupKeys.get(random.nextInt(readDataSourceCount));
 			return resolvedReadDataSources.get(lookupKey);
+		case WRITE:
+			return writeDataSource;
 		}
 		return writeDataSource;
 	}

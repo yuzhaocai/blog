@@ -1,33 +1,31 @@
-package com.class8.blog.support;
+package com.class8.blog.datasource;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource;
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAttribute;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.ReflectionUtils;
-
 import com.class8.blog.exception.DynamicDataSourceException;
 
-@Aspect
-@Component
-public class DynamicDataSourceTransactionProcessor implements BeanPostProcessor {
+/**
+ * 读写数据源处理器
+ * @author Administrator
+ *
+ */
+public class ReadWriteDataSourceProcessor implements BeanPostProcessor {
 	
-	private static final Logger logger = LoggerFactory.getLogger(DynamicDataSourceTransactionProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReadWriteDataSourceProcessor.class);
 	
 	//当写后读取数据时是否强制选择读库，默认为false
 	private boolean forceChoiceReadWhenWrite = false;
@@ -39,7 +37,7 @@ public class DynamicDataSourceTransactionProcessor implements BeanPostProcessor 
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object postProcessAfterInitialization(Object bean, String s)
+	public Object postProcessAfterInitialization(Object bean, String name)
 			throws BeansException {
 		if(!(bean instanceof NameMatchTransactionAttributeSource)) {
             return bean;
@@ -71,12 +69,13 @@ public class DynamicDataSourceTransactionProcessor implements BeanPostProcessor 
 		return null;
 	}
 
-	public Object postProcessBeforeInitialization(Object bean, String s)
+	public Object postProcessBeforeInitialization(Object bean, String name)
 			throws BeansException {
 		return bean;
 	}
 	
 	/**
+	 * 读写数据源AOP增强方法
 	 * TODO:直接读方法选择读，写方法选择写，不用理会上次是都还是写？
 	 * @param proceedingJoinPoint
 	 * @return
@@ -87,22 +86,26 @@ public class DynamicDataSourceTransactionProcessor implements BeanPostProcessor 
 		for (String methodPattern : readMethodPatters) {
 			if(isMatch(methodName,methodPattern)){
 				if(forceChoiceReadWhenWrite){
-					DynamicDataSourceReadWriteHolder.markRead();
+					//如果写后强制选择读库，则选择读库
+					ReadWriteDataSourceDecision.setType(ReadWriteType.READ);
 				} else {
-					if(DynamicDataSourceReadWriteHolder.isChoiceWrite()){
-						DynamicDataSourceReadWriteHolder.markWrite();
+					ReadWriteType type = ReadWriteDataSourceDecision.getType();
+					if(ReadWriteType.WRITE.equals(type)){
+						//如果上一次是写，且没有强制写后选择读库，则选择写库
+						ReadWriteDataSourceDecision.setType(ReadWriteType.WRITE);
 					} else {
-						DynamicDataSourceReadWriteHolder.markRead();
+						ReadWriteDataSourceDecision.setType(ReadWriteType.READ);
 					}
 				}
 				break;
 			}
 		}
-		DynamicDataSourceReadWriteHolder.markWrite();
+		//默认选择写库
+		ReadWriteDataSourceDecision.setType(ReadWriteType.WRITE);
 		try {
 			return proceedingJoinPoint.proceed();
 		} finally {
-			DynamicDataSourceReadWriteHolder.clear();
+			ReadWriteDataSourceDecision.clear();
 		}
 	}
 	
